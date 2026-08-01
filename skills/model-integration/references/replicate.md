@@ -47,5 +47,5 @@ output = replicate.run(
 
 ## Notes
 
-- Model refs are `owner/name` and can be version-pinned as `owner/name:<version-hash>` for reproducibility.
+- Model refs are `owner/name` and can be version-pinned as `owner/name:<version-hash>` for reproducibility; most image models also accept a `"seed"` input — pin both when iterating.
 - Downloads: iterate the returned file objects and write them locally; don't report bare URLs.

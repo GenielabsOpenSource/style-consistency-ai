@@ -5,53 +5,73 @@ description: Connect to and invoke image and video generation models across prov
 
 # Model Integration
 
-Turn "generate this image" into an actual, correct API call — regardless of which provider the user has configured. This skill is the **execution layer** for the consistency skills in this repo (`character-consistency` and the planned `background-`, `object-`, `video-consistency`): they decide *what* to prompt and *which reference* to condition on; this skill handles *how to reach a model and invoke it*.
+The consistency skills in this repo decide *what* to prompt and *which reference* to condition on. This skill owns everything below that line: finding a way to reach a model, choosing the right one for the job, making the call correctly, and recovering when it fails.
 
-Two principles:
+Treat it as a contract with four clauses:
 
-1. **Detect, don't assume.** Never hardcode a provider. Discover what is actually available — MCP image tools first, then configured API keys — and use the strongest option present.
-2. **Match the model to the job.** Providers are not interchangeable. Reference-following (the thing consistency needs) varies enormously between models. Route by capability, not by habit.
+1. **Discover before you call.** The environment defines what's possible — never assume a provider.
+2. **Route by capability.** Models differ most where consistency cares most: how faithfully they follow a reference image.
+3. **Invoke reproducibly.** Same inputs should give comparable outputs; outputs land as local files, never bare URLs.
+4. **Fail loudly and cheaply.** Diagnose from the error, retry only what retrying can fix, and report exactly what ran.
 
-## Step 1 — Detect available capabilities (in this order)
+## Clause 1 — Discovery
 
-1. **MCP / built-in image tools.** If the environment exposes an image-generation tool or skill (e.g. a `fal-generate` skill, a platform image tool), prefer it — keys and plumbing are already handled. List what's available before reaching for raw APIs.
-2. **Configured API keys.** Check the environment for provider credentials:
+Work down this list and stop at the first hit:
 
-   | Provider | Env var | Reference |
-   |----------|---------|-----------|
-   | Gemini / Nano Banana / Veo | `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) | `references/gemini.md` |
-   | fal.ai | `FAL_KEY` | `references/fal.md` |
-   | Replicate | `REPLICATE_API_TOKEN` | `references/replicate.md` |
-   | OpenAI GPT Image | `OPENAI_API_KEY` | `references/openai-xai.md` |
-   | xAI Grok Imagine | `XAI_API_KEY` | `references/openai-xai.md` |
+1. **Session tools.** An MCP image tool or generation skill already wired into the session (for example a fal-backed generation skill) beats raw SDK calls — auth, upload, and download are solved. Enumerate what the session exposes before writing any provider code.
+2. **Credentials in the environment.** Probe, don't guess:
 
-3. **Nothing configured?** Don't guess a key. Tell the user which providers this skill supports, what each is best at (below), and ask which they want to set up — then point them at the matching reference file for the one-time setup.
+   ```bash
+   env | grep -oE '^(GEMINI_API_KEY|GOOGLE_API_KEY|FAL_KEY|REPLICATE_API_TOKEN|OPENAI_API_KEY|XAI_API_KEY)=' | tr -d '='
+   ```
 
-Never print, log, or hardcode key values. Read them from the environment at call time.
+   (Prints only the *names* of configured keys, never values.)
 
-## Step 2 — Route to the right model
+   | Credential | Unlocks | Reference |
+   |---|---|---|
+   | `GEMINI_API_KEY` / `GOOGLE_API_KEY` | Nano Banana image models, Veo video | `references/gemini.md` |
+   | `FAL_KEY` | Flux Kontext, Seedream, fal video endpoints | `references/fal.md` |
+   | `REPLICATE_API_TOKEN` | Replicate's hosted catalog (Flux, video models) | `references/replicate.md` |
+   | `OPENAI_API_KEY` | GPT Image generation + masked edits | `references/openai-xai.md` |
+   | `XAI_API_KEY` | Grok Imagine text-to-image | `references/openai-xai.md` |
 
-See `references/model-routing.md` for the full rubric. Quick guide:
+3. **Empty environment.** Stop and present the trade-space instead of picking for the user: name each provider, what it's uniquely good at, and roughly what setup involves. Once they choose, walk them through only that provider's reference file.
 
-| Job | Prefer | Why |
-|-----|--------|-----|
-| **Reference-following / consistency** (character, object, style) | Gemini "Nano Banana" image models, fal Flux Kontext, Seedream | Built for identity-preserving edits from reference images |
-| **Text-to-image, no reference** | Any; xAI Grok Imagine and OpenAI GPT Image are strong | Fast, high quality from prompt alone |
-| **Text *inside* the image** (posters, UI, labels) | OpenAI GPT Image | Best in-image typography |
-| **Mask-based inpaint / outpaint** | OpenAI GPT Image, fal | First-class edit + mask support |
-| **Video (text→video, image→video)** | Google Veo (via Gemini), Replicate/fal video models | Veo leads on coherence |
-| **Widest model selection under one key** | Replicate | One API, many hosted models |
+Handle keys by name only — read them from the environment inside the call, never echo values into logs, code, or chat.
 
-When several providers qualify, pick the strongest at reference-following and **state which model you used** in your reply.
+## Clause 2 — Routing
 
-## Step 3 — Invoke, following the reference file
+`references/model-routing.md` holds the full rubric, capability matrix, and the two-stage identity/composition pattern. The short version, ordered by the question you should ask first:
 
-Each `references/<provider>.md` gives the setup (SDK install + env var), a minimal text-to-image call, and — where the provider supports it — a reference-conditioned edit call (the important one for consistency). Copy the pattern, substitute the prompt and reference image(s), and run it. Save outputs to a path the user can open.
+- **Preserving an established identity** (character, object, style)? → a reference-follower: Nano Banana (Pro) or Flux Kontext. This is the default path for everything in this repo.
+- **Legible text inside the image**? → GPT Image.
+- **Local edit under a mask** (fix a region, swap a background)? → GPT Image or a Flux inpaint endpoint.
+- **Motion**? → Veo via Gemini; Replicate/fal video endpoints as alternates.
+- **No reference, just a scene**? → whatever is configured; Grok Imagine and GPT Image are quick and strong.
+- **Only one provider available?** Use it — and if it's weak for the job, say so in one line ("no reference support here; identity may drift").
 
-## Step 4 — Hand back to the consistency loop
+Always name the model you used in your reply. When two qualify, prefer the stronger reference-follower and note the runner-up so the user can ask for a comparison.
 
-After generating, return to the calling consistency skill's per-generation loop: **verify** the output against the character/object/scene's defining traits, and **on drift, fix at the cheapest level** — sharpen the prompt or swap the reference before switching models. Trying a different model (Step 2) is a mid-ladder fix, not the first move.
+## Clause 3 — Invocation
 
-## Notes on model IDs
+Each provider reference gives: one-time setup, a minimal text-to-image call, and the reference-conditioned edit call (the one consistency work lives on). Beyond copying the pattern:
 
-Model names drift fast (e.g. Nano Banana → Nano Banana Pro; `gpt-image-1` → successors). The reference files name the current-known IDs, but if a call 404s on an unknown-model error, list the provider's available models via its SDK/API and pick the closest match rather than assuming the ID is wrong everywhere.
+- **Prompt the delta.** When a reference image is attached, describe only what changes. Re-describing the art style fights the reference — this is the core rule inherited from the consistency skills.
+- **Pin what you can.** Pass a `seed` where the API accepts one and record it; on Replicate, version-pin the model hash. When the user later says "like the last one but…", a pinned seed + model is the difference between iteration and lottery.
+- **Land outputs locally.** Download every result to a project path with a name that encodes intent — `out/fox_wave_3q_seed42.png`, not `download (3).png`. Report the path.
+- **Batch deliberately.** For an exploratory request, 2–4 variants at low cost beats one expensive render; for a locked-in consistency edit, one careful call beats a spray of variants.
+
+## Clause 4 — Failure playbook
+
+Diagnose from the error class, not by blind retry:
+
+| Symptom | Likely cause | Cheapest fix |
+|---|---|---|
+| 401 / 403 | Key missing, expired, or wrong env var name | Re-run discovery; confirm the exact variable the SDK reads |
+| Unknown / retired model ID | Provider renamed the model | List models via the SDK and pick the nearest current ID — IDs drift fast (Nano Banana → Pro; `gpt-image-1` → successors) |
+| 429 / rate limit | Burst too fast | Back off with jitter; drop batch size to 1 |
+| Content-policy rejection | Prompt or reference tripped the filter | Rephrase neutrally; if a reference image triggers it, try a different reference before a different provider |
+| Empty / malformed response | Transient provider fault | One retry; then switch provider for this call and note it |
+| Output ignores the reference | Wrong model class for the job | Re-route (Clause 2) — this is a routing bug, not a prompt bug |
+
+After any generation, control returns to the calling consistency skill's loop: verify against the identity checklist, and on drift fix at the cheapest level — prompt, then reference, then model. Switching providers is a mid-ladder move, never the reflex.

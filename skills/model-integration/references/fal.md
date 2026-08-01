@@ -45,4 +45,5 @@ url = fal_client.upload_file("references/hero_atlas.png")
 ## Notes
 
 - Model IDs live under the `fal-ai/...` namespace; browse fal's model gallery for current Kontext/Seedream/video endpoints.
+- Most fal endpoints accept a `"seed"` argument — pass and record one so "same but…" iterations stay comparable.
 - Outputs are returned as URLs — always download to a local path the user can open, don't just report the URL.
