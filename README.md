@@ -20,13 +20,13 @@ These skills encode a different path: a disciplined, training-free workflow that
 
 <div align="center">
 
-# 🔬 Genielabs — Pioneering AI Animation Research
+# 🔬 Genielabs — Pioneering Brand-Consistent Generative AI
 
-## We are actively researching AI-driven creative pipelines.
+## We are actively researching brand consistency for AI generation.
 
-**[Genielabs](https://genielabs.tech)** is at the forefront of AI-powered 2D animation and asset generation — using machine learning to keep characters, styles, and worlds production-consistent at the scale game studios and creative teams actually work at.
+**[Genielabs](https://genielabs.tech)** is at the forefront of brand-consistent generative AI — keeping every generated asset true to your brand's characters, art style, colors, and world, at the scale game studios and creative teams actually produce.
 
-This repository is a direct product of that research: open-source skills that bring production-grade style consistency into Claude.
+This repository is a direct product of that research: open-source skills that bring production-grade brand consistency into Claude.
 
 ### 📬 Want to collaborate, license, or learn more?
 
