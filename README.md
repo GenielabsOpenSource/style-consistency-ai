@@ -2,10 +2,11 @@
 
 **Agent skills for keeping AI-generated visuals on-model — same character, same style, same world, across every generation.**
 
-![Claude Skill](https://img.shields.io/badge/Claude-Skill-d97757) ![Markdown Only](https://img.shields.io/badge/dependencies-none-brightgreen) ![Status](https://img.shields.io/badge/status-active-blue)
+![License: PolyForm NC](https://img.shields.io/badge/License-PolyForm%20NC-blue) ![Claude Skill](https://img.shields.io/badge/Claude-Skill-d97757) ![Markdown Only](https://img.shields.io/badge/dependencies-none-brightgreen) ![Status](https://img.shields.io/badge/status-active-blue)
 
-<!-- hero image: coming soon -->
-<!-- ![Style consistency demo](docs/hero.png) -->
+![Style drift: original character vs. off-model generations from two frontier image models, with the failures annotated — wrong art style, bad proportions, outline thickness, bad head shape, broken renders](docs/hero.png)
+
+*This is the 30% problem: two frontier multimodal models, one well-known character, and every generation drifts — art style, proportions, outlines, head shape, render quality.*
 
 AI image generation is *OK* for about 70% of use cases — generic styles the models have seen a million times. But what about the other 30%? What happens when **your** style sits in a region the multimodal models were never trained on?
 
@@ -49,9 +50,9 @@ Drop a skill into any skills-aware agent (Claude Code, Claude Projects, or anyth
 
 ```bash
 # Claude Code: personal skills directory
-git clone https://github.com/<your-org>/style-consistency-visual-ai
-cp -R style-consistency-visual-ai/skills/character-consistency ~/.claude/skills/
-cp -R style-consistency-visual-ai/skills/model-integration ~/.claude/skills/
+git clone https://github.com/GenielabsOpenSource/style-consistency-ai
+cp -R style-consistency-ai/skills/character-consistency ~/.claude/skills/
+cp -R style-consistency-ai/skills/model-integration ~/.claude/skills/
 ```
 
 Or paste the contents of a `SKILL.md` into a Claude Project's instructions. The skill auto-triggers whenever a conversation involves generating a recurring character — no configuration needed. Reference files load on demand, so the skills stay cheap in context.
@@ -73,7 +74,7 @@ These skills are the open, agent-sized distillation of how [**Genielabs**](https
 
 ## 🤝 Contributing
 
-PRs welcome! Especially:
+PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). All PRs require maintainer approval. Especially:
 
 - ✍️ The planned skills — `background-consistency`, `object-consistency`, `video-consistency`
 - 🔌 New provider references for `model-integration` (Midjourney, Ideogram, local ComfyUI/SD…)
@@ -94,6 +95,10 @@ skills/
 ```
 
 Each skill follows the [Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) convention: a `SKILL.md` with YAML frontmatter (`name`, `description`) that controls auto-triggering, plus reference files the agent reads only when needed.
+
+## 📜 License
+
+[PolyForm Noncommercial 1.0.0](LICENSE) — free for all non-commercial use. For commercial use, reach out at [genielabs.tech](https://genielabs.tech).
 
 ---
 
