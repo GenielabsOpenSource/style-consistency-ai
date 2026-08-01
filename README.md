@@ -7,7 +7,13 @@
 <!-- hero image: coming soon -->
 <!-- ![Style consistency demo](docs/hero.png) -->
 
-Image models are astonishing at making *an* image — and unreliable at making *the same* image twice. Ask for your character again and the eyes shift, the palette drifts, the six fingers arrive. These skills teach an AI agent a disciplined workflow for holding visual identity steady, whether it's a character, an object, a background, or a full video shot.
+AI image generation is *OK* for about 70% of use cases — generic styles the models have seen a million times. But what about the other 30%? What happens when **your** style sits in a region the multimodal models were never trained on?
+
+Usually: massive style drift. Wrong proportions, wrong colors, wrong art style, wrong lighting — and hallucinated details that were never part of the design. The model quietly pulls your character back toward the generic styles it knows.
+
+Training a LoRA is the reflex answer, but it comes with real downsides: it trades away the model's creativity, it locks you to one identity per adapter — mixing several brand assets in one scene gets hard fast — and every style tweak means retraining. Most teams reach for it far earlier than they need to.
+
+These skills encode a different path: a disciplined, training-free workflow that holds visual identity steady — for a character, an object, a background, or a full video shot — and escalates to heavier machinery only when the cheap fixes demonstrably fail.
 
 ## 💡 The approach
 
