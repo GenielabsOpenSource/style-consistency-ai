@@ -16,6 +16,28 @@ Training a LoRA is the reflex answer, but it comes with real downsides: it trade
 
 These skills encode a different path: a disciplined, training-free workflow that holds visual identity steady — for a character, an object, a background, or a full video shot — and escalates to heavier machinery only when the cheap fixes demonstrably fail.
 
+---
+
+<div align="center">
+
+# 🔬 Genielabs — Pioneering AI Animation Research
+
+## We are actively researching AI-driven creative pipelines.
+
+**[Genielabs](https://genielabs.tech)** is at the forefront of AI-powered 2D animation and asset generation — using machine learning to keep characters, styles, and worlds production-consistent at the scale game studios and creative teams actually work at.
+
+This repository is a direct product of that research: open-source skills that bring production-grade style consistency into Claude.
+
+### 📬 Want to collaborate, license, or learn more?
+
+## 👉 [**genielabs.tech**](https://genielabs.tech) 👈
+
+*Reach out — we'd love to hear from you.*
+
+</div>
+
+---
+
 ## 💡 The approach
 
 Everything in this repo follows a few core ideas:
@@ -67,10 +89,6 @@ For a dedicated character-generation product or internal tool, use the skills as
 4. The agent runs the full loop autonomously: classify the request → pick the closest reference → prompt the delta → generate → verify against the identity checklist → fix drift at the cheapest level.
 
 The skills are plain Markdown with no runtime dependencies, so they port to any framework that can follow instructions.
-
-## 🏭 Genielabs — for production teams
-
-These skills are the open, agent-sized distillation of how [**Genielabs**](https://genielabs.tech) approaches visual consistency for real production pipelines — game studios and creative teams generating thousands of on-model assets, not one-off images. If you need character consistency at production scale — datasets, routing, evaluation, and training — 👉 [**genielabs.tech**](https://genielabs.tech) 👈 Reach out, we'd love to hear from you.
 
 ## 🤝 Contributing
 
