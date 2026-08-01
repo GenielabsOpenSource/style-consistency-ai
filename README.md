@@ -4,9 +4,12 @@ A collection of agent **skills for preserving style consistency in visual genera
 
 ## Skills
 
-| Skill | Purpose |
-|-------|---------|
-| [`character-consistency`](skills/character-consistency/SKILL.md) | Maintain character identity and style accuracy across generations and edits with multimodal image models (Nano Banana, GPT Image, Flux Kontext, Seedream, etc.). Uses a ladder of approaches from a one-line corrective guideline up to a fine-tuned model, always starting at the cheapest rung that solves the problem. |
+| Skill | Status | Purpose |
+|-------|--------|---------|
+| [`character-consistency`](skills/character-consistency/SKILL.md) | ✅ Available | Maintain character identity and style accuracy across generations and edits with multimodal image models (Nano Banana, GPT Image, Flux Kontext, Seedream, etc.). Uses a ladder of approaches from a one-line corrective guideline up to a fine-tuned model, always starting at the cheapest rung that solves the problem. |
+| [`background-consistency`](skills/background-consistency/PLACEHOLDER.md) | 🚧 Planned | Keep environments, settings, and backdrops consistent across generations (locations, lighting, architecture, world details). |
+| [`object-consistency`](skills/object-consistency/PLACEHOLDER.md) | 🚧 Planned | Keep recurring props, products, and objects on-model across generations (shape, materials, branding, distinctive details). |
+| [`video-consistency`](skills/video-consistency/PLACEHOLDER.md) | 🚧 Planned | Preserve style and identity across frames and shots in AI video generation (temporal coherence, motion, cross-shot continuity). |
 
 ## Layout
 
